@@ -24,6 +24,15 @@ builder.Services.AddAuthentication(
 
 var app = builder.Build();
 
+
+//Applies migration at runtime
+IApplicationBuilder applicationBuilder = app;
+using (IServiceScope scope = applicationBuilder.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+{
+    var applicationDbContext = scope.ServiceProvider.GetService<AuthDbContext>();
+    applicationDbContext.Database.EnsureCreated();
+}
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
